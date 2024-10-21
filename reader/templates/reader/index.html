@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector PDF</title>
+    <link rel="stylesheet" href="{% static 'reader/styles.css' %}">
+    <link rel="shortcut icon" href="https://map-sa.com.ar/wp-content/themes/mapsa/img/logo.png" type="image/x-icon">
+</head>
+
+<body>
+    <header class="main-head">
+        <img src="https://map-sa.com.ar/wp-content/themes/mapsa/img/logo.png" alt="logo" class="image">
+        <h1 class="title">Lector de Part Numbers</h1>
+    </header>
+
+    <div class="form-container">
+        <form method="post" enctype="multipart/form-data" id="pdf-form" class="form">
+            {% csrf_token %}
+            <div class="file-upload" id="drop-zone">
+                <input type="file" id="pdf-file" name="pdf" accept="application/pdf">
+                <label for="pdf-file">Arrastra y suelta el archivo aquí o haz clic para seleccionarlo</label>
+                <p class="file-name" id="file-name">
+                    {% if pdf_name %} {{ pdf_name }} {% else %} Ningún archivo seleccionado {% endif %}
+                </p>
+            </div>
+        </form>
+
+        <div id="spinner" class="spinner" style="display: none;">
+            <div class="loading-circle"></div>
+        </div>
+    </div>
+
+    {% if file_uploaded %}
+    {% if data and data|length > 0 %}
+    <button id="load-excel-btn" class="excel-button">Cargar Excel</button>
+
+    <form method="post" enctype="multipart/form-data" id="excel-form">
+        {% csrf_token %}
+        <input type="file" id="excel-file" name="excel" accept=".xlsx, .xls" style="display: none;">
+
+        <input type="hidden" name="values" value="{{ data|join:',' }}">
+
+        <button type="submit" id="submit-excel-btn" style="display: none;">Subir Excel</button>
+    </form>
+    {% endif %}
+
+    {% if error %}
+    <p class="error" id="excel-error">{{ error }}</p>
+    {% endif %}
+
+    <div class="results" id="results">
+        <h2 class="result-title">Resultados del PDF:</h2>
+        <h4 class="disclaimer">*Por favor revisar resultados</h2>
+        {% if data and data|length > 0 %}
+
+        <button class="copy-button" onclick="copyPartNumbers()">Copiar Part Numbers</button>
+        <button class="copy-button" onclick="copyQuantities()">Copiar Cantidades</button>
+
+        <ul class="part-numbers-grid">
+            {% for part, number in data %}
+            <li class="part-number">Part Number: {{ part }}<br />Cantidad: {{ number }}</li>
+            {% endfor %}
+        </ul>
+
+        {% else %}
+        <p class="no-results">No se encontraron resultados en el PDF.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div id="copy-popup" class="popup">
+        ¡Part Numbers copiados al portapapeles!
+    </div>
+
+    <script src="{% static 'reader/scripts.js' %}"></script>
+</body>
+
+</html>
