@@ -7,7 +7,6 @@ import pdfplumber.page
 import pandas as pd
 import pytesseract
 import cv2
-import matplotlib.pyplot as plt
 import re
 
 

@@ -6,7 +6,6 @@ from io import BytesIO
 import openpyxl
 import pandas as pd
 from copy import copy
-from openpyxl.cell import MergedCell
 from openpyxl.utils import range_boundaries
 
 
